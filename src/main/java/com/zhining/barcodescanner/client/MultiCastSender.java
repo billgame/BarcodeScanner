@@ -10,6 +10,8 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
@@ -29,6 +31,9 @@ public class MultiCastSender {
     private String hostName;
     
     DatagramSocket clientUdpSocket;
+    Socket tcpSocket;
+    ServerSocket clientServer;//用于建立端口侦听服务器发过来的消息(服务器的IP,服务端口)
+    
     MulticastSocket ms;
     InetAddress group;
     
@@ -61,6 +66,9 @@ public class MultiCastSender {
     public int getPort(){
         return clientUdpSocket.getPort();
     }
+    private void cmdExcute(DatagramPacket packet,Object... args){
+        
+    }
     public boolean send(Object... datas){
         boolean success=true;
         byte[] bytes;//=new byte[1024];
@@ -82,6 +90,7 @@ public class MultiCastSender {
             InetAddress serverAddress= receivePacket.getAddress();
             Logger.getLogger(MultiCastSender.class.getName()).log(Level.INFO,
                     "服务器地址 "+serverAddress.getHostAddress());
+            cmdExcute(receivePacket);
         } catch (IOException ex) {
             success=false;
             Logger.getLogger(MultiCastSender.class.getName()).log(Level.SEVERE, null, ex);

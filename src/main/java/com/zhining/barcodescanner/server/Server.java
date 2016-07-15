@@ -12,6 +12,9 @@ import java.net.MulticastSocket;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static com.zhining.barcodescanner.Cmd.*;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 /**
  *
@@ -23,25 +26,25 @@ public class Server {
     private final String multicast_ip="226.1.3.5";
     private final int multicast_port=7777;
     
-    private String localIp;
-    private String hostName;
-    
-    private static final String cmd_find="find";
-    private static final String sperator="@";
+    private String serverIP;
+    private String serverHostName;
+    private int serverPort;
     
     MulticastSocket multicastSocket;
+    Socket tcpSocket;
+    ServerSocket serverSocket;
     InetAddress multicastAddress;
     Thread listenerThread;
     public Server(){
         try {
             InetAddress addr=InetAddress.getLocalHost();
-            localIp=addr.getHostAddress().toString();
-            hostName=addr.getHostName().toString();
+            serverIP=addr.getHostAddress().toString();
+            serverHostName=addr.getHostName().toString();
             multicastAddress=InetAddress.getByName(multicast_ip);
             multicastSocket=new MulticastSocket(multicast_port);
             multicastSocket.setTimeToLive(1);
             Logger.getLogger(Server.class.getName()).log(Level.INFO,"Server构造完成..."
-            +localIp+"@"+hostName);
+            +serverIP+"@"+serverHostName);
         }catch(UnknownHostException ex){
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
         }catch (IOException ex) {
@@ -73,13 +76,17 @@ public class Server {
                 String newIP=args[1];//客户端IP
                 String clientPort=args[2];//客户端端口
                 String hostName=args[3];//客户主机名
+                StringBuilder sb=new StringBuilder();
+                sb.append(cmd_server).append(sperator)
+                        .append(serverIP).append(sperator)
+                        .append(serverPort).append(sperator)
+                        .append(serverHostName);
                 Logger.getLogger(Server.class.getName()).log(Level.INFO, "发现新客户端:"
-                        +newIP+sperator
-                        +clientPort+sperator
-                        +hostName);
-                byte[] data="server".getBytes();
+                        +sb.toString());
+                byte[] data=(sb.toString()).getBytes();
                 DatagramPacket tellClientIamServer=new DatagramPacket(data, data.length,packet.getAddress(),packet.getPort());
                 try {
+                    //向客户端发udp告诉他Server IP
                     multicastSocket.send(tellClientIamServer);
                 } catch (IOException ex) {
                     Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);

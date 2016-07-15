@@ -3,14 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.zhining.barcodescanner.client;
+package com.zhining.barcodescanner;
 
 /**
  *
  * @author billzhu
  */
-public class Client {
-    private static final String cmd_find="find";
-    private static final String cmd_server="server";
-    private static final String sperator="@";
+public class Cmd {
+    public static final String cmd_find="find";
+    public static final String cmd_server="server";
+    public static final String sperator="@";
 }
